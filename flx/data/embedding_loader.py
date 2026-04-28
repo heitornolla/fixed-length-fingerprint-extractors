@@ -30,17 +30,13 @@ class EmbeddingLoader(DataLoader):
 
     def save(self, outdir: str) -> None:
         """
-        Saves embeddings and corresponding ids to disk
+        Saves embeddings to disk
 
         @param outdir : absolute path of the output directory
         """
         outarr = self.numpy()
         outarr = outarr.astype(np.float32)
         np.save(join(outdir, "embeddings.npy"), outarr)
-        with open(join(outdir, "ids.json"), "w") as file:
-            json.dump(
-                Identifier.ids_to_json(self._id_to_embedding.keys()), file, indent=None
-            )
 
     @staticmethod
     def load(dir: str) -> "EmbeddingLoader":
