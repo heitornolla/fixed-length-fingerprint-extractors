@@ -54,6 +54,24 @@ class SFingeLoader(ImageLoader):
     def _load_image(filepath: str) -> torch.Tensor:
         img = cv2.imread(filepath, flags=cv2.IMREAD_GRAYSCALE)
         return VTF.to_tensor(img[:-32])
+    
+class BaseNLoader(ImageLoader):
+    @staticmethod
+    def _extension() -> str:
+        return ".png"
+
+    @staticmethod
+    def _file_to_id_fun(_: str, filename: str) -> Identifier:
+        # Pattern: <dir>/<subject_id>_<impression_id>.png
+        subject_id, _ = filename.split("-")
+        # We must start indexing at 0 instead of 1 to be compatible with pytorch
+        return Identifier(int(subject_id) - 1, 1)
+    # Only one finger per impression in base N
+
+    @staticmethod
+    def _load_image(filepath: str) -> torch.Tensor:
+        img = cv2.imread(filepath, flags=cv2.IMREAD_GRAYSCALE)
+        return VTF.to_tensor(img[:-32])
 
 
 class FVC2004Loader(ImageLoader):
