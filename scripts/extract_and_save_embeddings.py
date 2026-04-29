@@ -12,8 +12,9 @@ from flx.image_processing.binarization import LazilyAllocatedBinarizer
 
 
 MODEL_DIR: str = os.path.abspath("models")
-DATASET_PATH: str = os.path.abspath("/storage/datasets/full/baseN_aligned/images/latent")
-OUT_DIR = '/storage/datasets/full/deepprint_embeddings/basen/latents/'
+DATASET_PATH: str = os.path.abspath("/storage/datasets/full/baseN_aligned/images/")
+OUT_DIRS = ['./latents/', './references']
+OUT_NAMES = ['latents.npy', 'references.npy']
 
 
 def get_extractor(model_dir):
@@ -43,11 +44,13 @@ def get_embeddings(extractor, dataset_path, loader):
     return embeddings
 
 
-def save_embeddings(embeddings, out_path):
-    embeddings.save(out_path)
+def save_embeddings(embeddings, out_path, out_name):
+    embeddings.save(out_path, out_name)
 
 
 if __name__ == "__main__":
     extractor = get_extractor(MODEL_DIR)
-    embeddings = get_embeddings(extractor, DATASET_PATH, BaseNLoader)
-    embeddings.save(OUT_DIR)
+
+    for out_dir, i in OUT_DIRS:
+        embeddings = get_embeddings(extractor, DATASET_PATH+out_dir, BaseNLoader)
+        embeddings.save(out_dir, OUT_NAMES[i])
