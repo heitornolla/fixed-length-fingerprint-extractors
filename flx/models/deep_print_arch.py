@@ -90,7 +90,11 @@ class _Branch_TextureEmbedding(nn.Module):
         x = self._4_flatten(x)
         x = self._5_dropout(x)
         x = self._6_linear(x)
-        x = torch.nn.functional.normalize(torch.squeeze(x), dim=1)
+        # After Linear the shape is [B, texture_embedding_dims]; no extra size-1 dims
+        # to squeeze. The previous `torch.squeeze(x)` collapsed the batch dim when B=1,
+        # causing F.normalize(dim=1) to fail at single-image inference time. The sibling
+        # _Branch_Minutia.forward (below) already uses this squeeze-free pattern.
+        x = torch.nn.functional.normalize(x, dim=1)
         return x
 
 

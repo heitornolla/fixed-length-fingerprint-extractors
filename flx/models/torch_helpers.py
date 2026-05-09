@@ -5,11 +5,11 @@ import torch
 
 
 CUDA_DEVICE = 0
-TRAIN_ON_A_100 = True
+TRAIN_ON_A_100 = False
 
 
 def get_dataloader_args(train: bool) -> dict:
-    batch_size = 16
+    batch_size = 8
     if not train:
         batch_size *= 2  # More memory available without gradients
     if not torch.cuda.is_available():

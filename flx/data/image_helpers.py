@@ -21,10 +21,18 @@ def pad_and_resize(
 
     height = img.shape[1]
     width = img.shape[2]
-    pad_width = 0 if width >= height else int((height - width) / 2)
-    pad_height = 0 if height >= width else int((width - height) / 2)
+    # Distribute padding asymmetrically when |h - w| is odd, so the final
+    # image is truly square. The previous `int((h - w) / 2)` on both sides
+    # truncated a pixel in the odd case, leaving the output rectangular
+    # and tripping the squareness assertion below.
+    diff_w = max(0, height - width)
+    diff_h = max(0, width - height)
+    pad_left = diff_w // 2
+    pad_right = diff_w - pad_left
+    pad_top = diff_h // 2
+    pad_bottom = diff_h - pad_top
     img = VTF.pad(
-        img, padding=(pad_width, pad_height, pad_width, pad_height), fill=fill
+        img, padding=(pad_left, pad_top, pad_right, pad_bottom), fill=fill
     )  # left, top, right, bottom
 
     assert img.shape[1] == img.shape[2]
